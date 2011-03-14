@@ -1,0 +1,12 @@
+Package: ROAuth
+Title: R interface to liboauth
+Description: This package provides an interface to the liboauth library,
+	allowing users to authenticate via OAuth to the server of their
+	choice. 
+Version: 0.0.1
+Author: Jeff Gentry <geoffjentry@gmail.com>
+Maintainer: Jeff Gentry <geoffjentry@gmail.com>
+Depends: R (>= 2.12.0), methods
+License: LGPL
+SystemRequirements: liboauth (>= 0.9.4) liboauth.sourceforge.net 
+
