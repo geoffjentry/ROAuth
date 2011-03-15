@@ -20,51 +20,64 @@ setRefClass("OAuth",
                 handshakeComplete <<- FALSE
                 callSuper(...)
               },
-              isVerified = function() {
-                if (needsVerifier)
-                  length(verifier) != 0
-                else
-                  TRUE
-              }, 
-              requestToken = function() {
-                ## FIXME:  Lock this if handshake complete
-                ##   allow override to start over
-
+              handshake = function() {
+                ' Performs the OAuth handshake.  In most cases
+                  the user will need to complete a manual step
+                  with their web browser, entering a PIN into
+                  this function.
+                '
+                handshakeComplete <<- FALSE
                 resp <- oauthPOST(requestURL,
                                   consumerKey,
                                   consumerSecret,
                                   NULL, NULL)
                 vals <- parseResponse(resp)
+                if (!all(c('oauth_token', 'oauth_token_secret') %in%
+                         names(vals))) {
+                  stop("Invalid response from site, please ",
+                     "check your consumerKey and consumerSecret",
+                     " and try again.")
+                }
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
-
-                if (needsVerifier) {
-                  cat(paste("To enable the connection, please direct your",
-                            " web browser to: \n",
-                            authURL, "?oauth_token=",
-                            oauthKey,
-                            "\nWhen complete, record the PIN given ",
-                            "to you and call the verify() method\n",
-                            "with this value as its argument.\n",
-                            sep=''))
-                }
-              },
-              verify = function(val) {
-                verifier <<- val
-              },
-              accessToken = function() {
-                if (! .self$isVerified())
-                  stop("This OAuth instance has not been verified")
+                verifyURL <- paste(authURL, "?oauth_token=",
+                                   oauthKey, sep='')
+                msg <- paste("To enable the connection, please direct",
+                             " your web browser to: \n",
+                             verifyURL,
+                             "\nWhen complete, record the PIN given ",
+                             "to you and provide it here: ", sep='')
+                verifier <<- readline(prompt=msg)
                 resp <- oauthPOST(accessURL,
                                   consumerKey,
                                   consumerSecret,
                                   oauthKey, oauthSecret)
                 vals <- parseResponse(resp)
+                if (!all(c('oauth_token', 'oauth_token_secret') %in%
+                         names(vals))) {
+                  stop("Invalid response after authorization.  ",
+                       "You likely misentered your PIN, try rerunning",
+                       " this handshake & browser authorization to get",
+                       " a new PIN.")
+                }
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
                 handshakeComplete <<- TRUE
+              },                
+              isVerified = function() {
+                'Will report if this object is verified or not.
+                 Verification can either involve not needing it
+                 in the first place, or as part of the handshake'
+                if (needsVerifier)
+                  length(verifier) != 0
+                else
+                  TRUE
               },
               OAuthRequest = function(URL) {
+                ' If the OAuth handshake has been completed, will
+                submit a URL request with an OAuth signature, returning
+                any response from the server
+                '
                 if (! handshakeComplete)
                   stop("This OAuth instance has not been verified")
                 oauthPOST(URLencode(URL), consumerKey, consumerSecret,
@@ -81,11 +94,11 @@ oauthPOST <- function(url, consumerKey, consumerSecret,
 }
 
 parseResponse <- function(response) {
-  ## FIXME: This does zero error handling
-  
   ## Will return a named vector, so a response field of the
   ## form foo=blah&qwerty=asdf will have vals c(blah,asdf) and
-  ## names will be c(foo, qwerty)
+  ## names will be c(foo, qwerty).  If the response is borked,
+  ## the output of this function will be as well, so caveat
+  ## emptor, GIGO, etc
   pairs <- sapply(strsplit(response, '&')[[1]], strsplit, '=')
   out <- sapply(pairs, function(x) x[2])
   names(out) <- sapply(pairs, function(x) x[1])
