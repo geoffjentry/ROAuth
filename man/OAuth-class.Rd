@@ -3,35 +3,11 @@
 \docType{class}
 \alias{OAuth-class}
 
-\title{Class "OAuth"}
+\title{Class "OAuth": A class to manage OAuth authentication}
 \description{
-%%  ~~ A concise (1-5 lines) description of what the class is. ~~
+  Class \code{OAuth} wraps and handles OAuth handshakes and signatures
+  for the user within R
 }
-\section{Extends}{
-
-All reference classes extend and inherit methods from \code{"\linkS4class{envRefClass}"}.
-
-}
-\references{
-%%  ~~put references to the literature/web site here~~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
-}
-\examples{
-showClass("OAuth")
-}
-\keyword{classes}
 \section{Fields}{
   \describe{
     \item{\code{consumerKey}:}{Object of class \code{character} ~~ }
@@ -54,3 +30,30 @@ showClass("OAuth")
     \item{\code{handshake()}:}{ ~~ }
   }
 }
+\section{Extends}{
+All reference classes extend and inherit methods from \code{"\linkS4class{envRefClass}"}.
+}
+\references{
+liboauth: http://liboauth.sourceforge.net/
+}
+\author{
+Jeff Gentry
+}
+\examples{
+   ## This example uses a test case from liboauth and the
+   ## keys are already pre-signed.  This is an example of
+   ## one of the few times \code{needsVerifier} would be \code{FALSE}.
+    
+   reqURL <- "http://term.ie/oauth/example/request_token.php"
+   cKey <- "key"
+   cSecret <- "secret"
+   testURL <- "http://term.ie/oauth/example/echo_api.php?method=foo%20bar"
+
+   credentials <- OAuthFactory$new(consumerKey=cKey,
+                                   consumerSecret=cSecret,
+                                   requestURL=reqURL,
+                                   needsVerifier=FALSE)
+   credentials$handshake()
+   credentials$OAuthRequest(testURL)
+}
+\keyword{classes}

@@ -40,14 +40,18 @@ setRefClass("OAuth",
                 }
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
-                verifyURL <- paste(authURL, "?oauth_token=",
-                                   oauthKey, sep='')
-                msg <- paste("To enable the connection, please direct",
-                             " your web browser to: \n",
-                             verifyURL,
-                             "\nWhen complete, record the PIN given ",
-                             "to you and provide it here: ", sep='')
-                verifier <<- readline(prompt=msg)
+
+                if (needsVerifier) {
+                  verifyURL <- paste(authURL, "?oauth_token=",
+                                     oauthKey, sep='')
+                  msg <- paste("To enable the connection, please direct",
+                               " your web browser to: \n",
+                               verifyURL,
+                               "\nWhen complete, record the PIN given ",
+                               "to you and provide it here: ", sep='')
+                  verifier <<- readline(prompt=msg)
+                }
+
                 resp <- oauthPOST(accessURL,
                                   consumerKey,
                                   consumerSecret,
@@ -63,7 +67,8 @@ setRefClass("OAuth",
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
                 handshakeComplete <<- TRUE
-              },                
+              },
+              
               isVerified = function() {
                 'Will report if this object is verified or not.
                  Verification can either involve not needing it
@@ -73,6 +78,7 @@ setRefClass("OAuth",
                 else
                   TRUE
               },
+              
               OAuthRequest = function(URL) {
                 ' If the OAuth handshake has been completed, will
                 submit a URL request with an OAuth signature, returning
