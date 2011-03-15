@@ -4,14 +4,32 @@ setRefClass("OAuth",
               consumerSecret = "character",
               oauthKey = "character",
               oauthSecret = "character",
-              hasVerifier = "logical",
+              needsVerifier = "logical",
+              handshakeComplete = "logical",
               verifier = "character",
               requestURL = "character",
               authURL = "character",
               accessURL = "character"
               ),
             methods = list(
+              initialize = function(needsVerifier, ...) {
+                if (!missing(needsVerifier))
+                  needsVerifier <<- needsVerifier
+                else
+                  needsVerifier <<- FALSE
+                handshakeComplete <<- FALSE
+                callSuper(...)
+              },
+              isVerified = function() {
+                if (needsVerifier)
+                  length(verifier) != 0
+                else
+                  TRUE
+              }, 
               requestToken = function() {
+                ## FIXME:  Lock this if handshake complete
+                ##   allow override to start over
+
                 resp <- oauthPOST(requestURL,
                                   consumerKey,
                                   consumerSecret,
@@ -19,10 +37,24 @@ setRefClass("OAuth",
                 vals <- parseResponse(resp)
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
+
+                if (needsVerifier) {
+                  cat(paste("To enable the connection, please direct your",
+                            " web browser to: \n",
+                            authURL, "?oauth_token=",
+                            oauthKey,
+                            "\nWhen complete, record the PIN given ",
+                            "to you and call the verify() method\n",
+                            "with this value as its argument.\n",
+                            sep=''))
+                }
+              },
+              verify = function(val) {
+                verifier <<- val
               },
               accessToken = function() {
-                if ((hasVerifier) && (length(verifier) == 0))
-                  stop("This OAuth instances has not been verified")
+                if (! .self$isVerified())
+                  stop("This OAuth instance has not been verified")
                 resp <- oauthPOST(accessURL,
                                   consumerKey,
                                   consumerSecret,
@@ -30,20 +62,13 @@ setRefClass("OAuth",
                 vals <- parseResponse(resp)
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
+                handshakeComplete <<- TRUE
               },
-              authorize = function() {
-                resp <- oauthPOST(accessURL,
-                                  consumerKey,
-                                  consumerSecret,
-                                  oauthKey, oauthSecret)
-                vals <- parseResponse(resp)
-                ## FIXME:  PIN?
-                print("Need PIN, dude")
-              },
-              OAuthRequest = function(URL, args) {
-                if ((hasVerifier) && (length(verifier) == 0))
-                  stop("This OAuth instances has not been verified")
-                ## FIXME: Build up URL & send
+              OAuthRequest = function(URL) {
+                if (! handshakeComplete)
+                  stop("This OAuth instance has not been verified")
+                oauthPOST(URLencode(URL), consumerKey, consumerSecret,
+                                    oauthKey, oauthSecret)
               }
               )
             )
@@ -60,7 +85,7 @@ parseResponse <- function(response) {
   
   ## Will return a named vector, so a response field of the
   ## form foo=blah&qwerty=asdf will have vals c(blah,asdf) and
-  ## names iwll be c(foo, qwerty)
+  ## names will be c(foo, qwerty)
   pairs <- sapply(strsplit(response, '&')[[1]], strsplit, '=')
   out <- sapply(pairs, function(x) x[2])
   names(out) <- sapply(pairs, function(x) x[1])
