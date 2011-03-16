@@ -48,6 +48,11 @@
   \code{examples} section below for an example of how to instantiate an
   object of class \code{OAuth}.
 
+  In almost all cases, saving an \code{OAuth} object after handshake
+  and loading it into future sessions will allow it to remain authorized
+  without needing any manual intervention that might have been performed
+  initially, such as the PIN step with Twitter authentication.
+  
    The \code{needsVerifier} argument is optional and defaults to
    \code{TRUE}.  In almost all cases, the default should be used, the
    option is primarily provided to enable the examples as the keys
