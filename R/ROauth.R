@@ -81,15 +81,21 @@ setRefClass("OAuth",
                   TRUE
               },
               
-              OAuthRequest = function(URL) {
+              OAuthRequest = function(URL, method="GET") {
                 ' If the OAuth handshake has been completed, will
                 submit a URL request with an OAuth signature, returning
                 any response from the server
                 '
                 if (! handshakeComplete)
                   stop("This OAuth instance has not been verified")
-                oauthPOST(URLencode(URL), consumerKey, consumerSecret,
-                                    oauthKey, oauthSecret)
+
+                httpFunc <- switch(method,
+                                   POST = oauthPOST,
+                                   GET = oauthGET,
+                                   stop("method must be POST or GET"))
+
+                httpFunc(URLencode(URL), consumerKey, consumerSecret,
+                         oauthKey, oauthSecret)
               }
               )
             )
