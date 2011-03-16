@@ -40,7 +40,6 @@ setRefClass("OAuth",
                 }
                 oauthKey <<- vals['oauth_token']
                 oauthSecret <<- vals['oauth_token_secret']
-
                 if (needsVerifier) {
                   verifyURL <- paste(authURL, "?oauth_token=",
                                      oauthKey, sep='')
@@ -50,6 +49,9 @@ setRefClass("OAuth",
                                "\nWhen complete, record the PIN given ",
                                "to you and provide it here: ", sep='')
                   verifier <<- readline(prompt=msg)
+                  accessURL <<- paste(accessURL,
+                                      "?oauth_verifier=",
+                                      verifier, sep='')
                 }
 
                 resp <- oauthPOST(accessURL,

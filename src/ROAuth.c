@@ -10,44 +10,41 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
   char *oauthSecretStr = NULL;
   int tmpStrLen;
 
+  /* Double check data types for the inputs - the oauth tokens can
+     be string or NULL */
   if (!isString(url))
     error("'url' must be a string");
-
   if (!isString(consumerKey))
     error("'consumerKey' must be a string");
-
   if (!isString(consumerSecret))
     error("'consumerSecret' must be a string");
-
-  /*  FIXME:  Not strictly needed anyways, but why won't this work?
-  if ((!isNull(oauthKey))&&(!isString(oauthKey)))
+  if ((!isNull(oauthKey)) && (!isString(oauthKey)))
     error("'oauthKey' must be a string or NULL");
-
-  if ((!isString(oauthSecret))&&(!isString(oauthSecret)))
+  if ((!isNull(oauthSecret)) && (!isString(oauthSecret)))
     error("'oauthSecret' must be a string or NULL");
-  */
 
   if (!isNull(oauthKey)) {
     tmpStrLen = strlen(STR(oauthKey)) + 1;
     oauthKeyStr = (char *)R_alloc(tmpStrLen, sizeof(char));
     strncpy(oauthKeyStr, STR(oauthKey), tmpStrLen);
   }
-  
   if (!isNull(oauthSecret)) {
     tmpStrLen = strlen(STR(oauthSecret)) + 1;
     oauthSecretStr = (char *)R_alloc(tmpStrLen, sizeof(char));
     strncpy(oauthSecretStr, STR(oauthSecret), tmpStrLen);
   }
 
-  req_url = oauth_sign_url2(STR(url), &args, OA_HMAC, "POST",
+  /* sign the request and then fire it out */
+  req_url = oauth_sign_url2(STR(url), &args, OA_HMAC, NULL,
 			    STR(consumerKey), STR(consumerSecret),
 			    oauthKeyStr, oauthSecretStr);
-
   if (method == GET) {
     reply = oauth_http_get(req_url, args);
   } else {
     reply = oauth_http_post(req_url, args);
   }
+
+  /* liboauth requires freeing up some of these vars */
   if (req_url)
     free(req_url);
   if (args)
