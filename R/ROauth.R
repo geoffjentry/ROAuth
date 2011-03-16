@@ -16,7 +16,7 @@ setRefClass("OAuth",
                 if (!missing(needsVerifier))
                   needsVerifier <<- needsVerifier
                 else
-                  needsVerifier <<- FALSE
+                  needsVerifier <<- TRUE
                 handshakeComplete <<- FALSE
                 callSuper(...)
               },
@@ -98,6 +98,13 @@ oauthPOST <- function(url, consumerKey, consumerSecret,
   .Call("ROAuth_POST", url, consumerKey, consumerSecret,
         oauthKey, oauthSecret, PACKAGE="ROAuth")
 }
+
+oauthGET <- function(url, consumerKey, consumerSecret,
+                          oauthKey, oauthSecret) {
+  .Call("ROAuth_GET", url, consumerKey, consumerSecret,
+        oauthKey, oauthSecret, PACKAGE="ROAuth")
+}
+
 
 parseResponse <- function(response) {
   ## Will return a named vector, so a response field of the

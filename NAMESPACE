@@ -1,0 +1,7 @@
+import("methods")
+
+useDynLib("ROAuth")
+
+exportClass("OAuth")
+export("OAuthFactory")
+

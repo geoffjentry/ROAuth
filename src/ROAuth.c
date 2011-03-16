@@ -12,14 +12,20 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 
   if (!isString(url))
     error("'url' must be a string");
+
   if (!isString(consumerKey))
     error("'consumerKey' must be a string");
+
   if (!isString(consumerSecret))
     error("'consumerSecret' must be a string");
-  if (!isString(oauthKey))
-    error("'oauthKey' must be a string");
-  if (!isString(oauthSecret))
-    error("'oauthSecret' must be a string");
+
+  /*  FIXME:  Not strictly needed anyways, but why won't this work?
+  if ((!isNull(oauthKey))&&(!isString(oauthKey)))
+    error("'oauthKey' must be a string or NULL");
+
+  if ((!isString(oauthSecret))&&(!isString(oauthSecret)))
+    error("'oauthSecret' must be a string or NULL");
+  */
 
   if (!isNull(oauthKey)) {
     tmpStrLen = strlen(STR(oauthKey)) + 1;
@@ -38,10 +44,8 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 			    oauthKeyStr, oauthSecretStr);
 
   if (method == GET) {
-    printf("Here\n");
     reply = oauth_http_get(req_url, args);
   } else {
-    printf("There\n");
     reply = oauth_http_post(req_url, args);
   }
   if (req_url)

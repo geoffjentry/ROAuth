@@ -1,7 +1,10 @@
-.First.lib <- function(libname, pkgname)
-  library.dynam('ROAuth', package='ROAuth')
+.onLoad <- function(libname, pkgname) {
+    require("methods", quietly=TRUE)
+}
 
-.onLoad <- .First.lib
+.onUnload <- function( libpath ) {
+  library.dynam.unload("ROAuth", libpath )
+}
 
 OAuthFactory <- getRefClass("OAuth")
 OAuthFactory$accessors(names(OAuthFactory$fields()))
