@@ -9,6 +9,8 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
   char *oauthKeyStr = NULL;
   char *oauthSecretStr = NULL;
   int tmpStrLen;
+  char methodStr[10];
+
 
   /* Double check data types for the inputs - the oauth tokens can
      be string or NULL */
@@ -35,7 +37,11 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
   }
 
   /* sign the request and then fire it out */
-  req_url = oauth_sign_url2(STR(url), &args, OA_HMAC, NULL,
+  if (method)
+    strcpy(methodStr, "GET");
+  else
+    strcpy(methodStr, "POST");
+  req_url = oauth_sign_url2(STR(url), &args, OA_HMAC, methodStr,
 			    STR(consumerKey), STR(consumerSecret),
 			    oauthKeyStr, oauthSecretStr);
   if (method == GET) {
