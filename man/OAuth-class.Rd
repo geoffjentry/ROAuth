@@ -35,7 +35,9 @@
     \item{\code{isVerified()}:}{Returns the current verification status}
     \item{\code{OAuthRequest(URL, method="GET")}:}{Will sign the URL provided
       and make an HTTP request using either \code{POST} or \code{GET},
-      determined by \code{method}, defaulting to \code{GET}}
+      determined by \code{method}, defaulting to \code{GET}.  NOTE:  The
+    \code{URL} argument will be run through \code{\link{URLencode}}, so
+    doing this step beforehand might lead to bad behavior!}
     \item{\code{initialize(needsVerifier, ...)}:}{ For internal use}
   }
 }
