@@ -45,9 +45,9 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 			    STR(consumerKey), STR(consumerSecret),
 			    oauthKeyStr, oauthSecretStr);
   if (method == GET) {
-    reply = oauth_http_get(req_url, args);
+    reply = oauth_http_get2(req_url, args, NULL);
   } else {
-    reply = oauth_http_post(req_url, args);
+    reply = oauth_http_post2(req_url, args, NULL);
   }
 
   /* liboauth requires freeing up some of these vars */
