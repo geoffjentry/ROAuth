@@ -102,15 +102,15 @@ setRefClass("OAuth",
 
 
 oauthPOST <- function(url, consumerKey, consumerSecret,
-                          oauthKey, oauthSecret) {
+                          oauthKey, oauthSecret, customHeader) {
   .Call("ROAuth_POST", url, consumerKey, consumerSecret,
-        oauthKey, oauthSecret, PACKAGE="ROAuth")
+        oauthKey, oauthSecret, customHeader, PACKAGE="ROAuth")
 }
 
 oauthGET <- function(url, consumerKey, consumerSecret,
-                          oauthKey, oauthSecret) {
+                          oauthKey, oauthSecret, customHeader) {
   .Call("ROAuth_GET", url, consumerKey, consumerSecret,
-        oauthKey, oauthSecret, PACKAGE="ROAuth")
+        oauthKey, oauthSecret, customHeader, PACKAGE="ROAuth")
 }
 
 
