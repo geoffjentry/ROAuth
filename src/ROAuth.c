@@ -41,7 +41,7 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
   if (!isNull(customHeader)) {
     tmpStrLen = strlen(STR(customHeader)) + 1;
     customHeaderStr = (char *)R_alloc(tmpStrLen, sizeof(char));
-    strncpy(customHeaderStr, STR(customHeaderKey), tmpStrLen);
+    strncpy(customHeaderStr, STR(customHeader), tmpStrLen);
   }
 
   /* sign the request and then fire it out */
