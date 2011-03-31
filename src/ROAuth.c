@@ -2,12 +2,13 @@
 
 SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 		 SEXP consumerSecret, SEXP oauthKey,
-		 SEXP oauthSecret, int method) { 
+		 SEXP oauthSecret, SEXP customHeader, int method) { 
   char *req_url;
   char *reply;
   char *args = NULL;
   char *oauthKeyStr = NULL;
   char *oauthSecretStr = NULL;
+  char *customHeaderStr = NULL;
   int tmpStrLen;
   char methodStr[10];
 
@@ -24,6 +25,8 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
     error("'oauthKey' must be a string or NULL");
   if ((!isNull(oauthSecret)) && (!isString(oauthSecret)))
     error("'oauthSecret' must be a string or NULL");
+  if ((!isNull(customHeader)) && (!isString(customHeader)))
+    error("'customHeader' must be a string or NULL");
 
   if (!isNull(oauthKey)) {
     tmpStrLen = strlen(STR(oauthKey)) + 1;
@@ -35,6 +38,11 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
     oauthSecretStr = (char *)R_alloc(tmpStrLen, sizeof(char));
     strncpy(oauthSecretStr, STR(oauthSecret), tmpStrLen);
   }
+  if (!isNull(customHeader)) {
+    tmpStrLen = strlen(STR(customHeader)) + 1;
+    customHeaderStr = (char *)R_alloc(tmpStrLen, sizeof(char));
+    strncpy(customHeaderStr, STR(customHeaderKey), tmpStrLen);
+  }
 
   /* sign the request and then fire it out */
   if (method)
@@ -45,9 +53,9 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 			    STR(consumerKey), STR(consumerSecret),
 			    oauthKeyStr, oauthSecretStr);
   if (method == GET) {
-    reply = oauth_http_get2(req_url, args, NULL);
+    reply = oauth_http_get2(req_url, args, customHeaderStr);
   } else {
-    reply = oauth_http_post2(req_url, args, NULL);
+    reply = oauth_http_post2(req_url, args, customHeaderStr);
   }
 
   /* liboauth requires freeing up some of these vars */
@@ -64,15 +72,15 @@ SEXP ROAuth_HTTP(SEXP url, SEXP consumerKey,
 
 SEXP ROAuth_POST(SEXP url, SEXP consumerKey,
 		 SEXP consumerSecret, SEXP oauthKey,
-		 SEXP oauthSecret) {
+		 SEXP oauthSecret, SEXP customHeader) {
   return(ROAuth_HTTP(url, consumerKey, consumerSecret,
-		     oauthKey, oauthSecret, POST));
+		     oauthKey, oauthSecret, customHeader, POST));
 }
 
 SEXP ROAuth_GET(SEXP url, SEXP consumerKey,
-		 SEXP consumerSecret, SEXP oauthKey,
-		 SEXP oauthSecret) {
+		SEXP consumerSecret, SEXP oauthKey,
+		SEXP oauthSecret, SEXP customHeader) {
   return(ROAuth_HTTP(url, consumerKey, consumerSecret,
-		     oauthKey, oauthSecret, GET));
+		     oauthKey, oauthSecret, customHeader, GET));
 }
   

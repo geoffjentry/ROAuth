@@ -1,8 +1,8 @@
 #include "ROAuth.h"
 
 static const R_CallMethodDef R_CallDef[] = {
-  {"ROAuth_POST", (DL_FUNC)&ROAuth_POST, 5},
-  {"ROAuth_GET", (DL_FUNC)&ROAuth_GET, 5},
+  {"ROAuth_POST", (DL_FUNC)&ROAuth_POST, 6},
+  {"ROAuth_GET", (DL_FUNC)&ROAuth_GET, 6},
   {NULL, NULL, 0}
 };
 

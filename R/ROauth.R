@@ -81,7 +81,7 @@ setRefClass("OAuth",
                   TRUE
               },
               
-              OAuthRequest = function(URL, method="GET") {
+              OAuthRequest = function(URL, method="GET", customHeader=NULL) {
                 ' If the OAuth handshake has been completed, will
                 submit a URL request with an OAuth signature, returning
                 any response from the server
@@ -95,7 +95,7 @@ setRefClass("OAuth",
                                    stop("method must be POST or GET"))
 
                 httpFunc(URLencode(URL), consumerKey, consumerSecret,
-                         oauthKey, oauthSecret)
+                         oauthKey, oauthSecret, customHeader)
               }
               )
             )

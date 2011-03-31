@@ -33,11 +33,12 @@
     \item{\code{handshake()}:}{Performs an OAuth handshake using the
       information provided}
     \item{\code{isVerified()}:}{Returns the current verification status}
-    \item{\code{OAuthRequest(URL, method="GET")}:}{Will sign the URL provided
-      and make an HTTP request using either \code{POST} or \code{GET},
+    \item{\code{OAuthRequest(URL, method="GET",
+	customHeader=NULL)}:}{Will sign the URL provided and make an
+      HTTP request using either \code{POST} or \code{GET}, 
       determined by \code{method}, defaulting to \code{GET}.  NOTE:  The
-    \code{URL} argument will be run through \code{\link{URLencode}}, so
-    doing this step beforehand might lead to bad behavior!}
+      \code{URL} argument will be run through \code{\link{URLencode}}, so
+      doing this step beforehand might lead to bad behavior!}
     \item{\code{initialize(needsVerifier, ...)}:}{ For internal use}
   }
 }
@@ -55,12 +56,16 @@
   without needing any manual intervention that might have been performed
   initially, such as the PIN step with Twitter authentication.
   
-   The \code{needsVerifier} argument is optional and defaults to
-   \code{TRUE}.  In almost all cases, the default should be used, the
-   option is primarily provided to enable the examples as the keys
-   provided by the examples are already signed.  If you feel that you're
-   in a situation where this should be set to \code{FALSE}, it's best to double
-   check this.
+  The \code{needsVerifier} argument is optional and defaults to
+  \code{TRUE}.  In almost all cases, the default should be used, the
+  option is primarily provided to enable the examples as the keys
+  provided by the examples are already signed.  If you feel that you're
+  in a situation where this should be set to \code{FALSE}, it's best to double
+  check this.
+
+  The \code{customHeader} argument to \code{OAuthRequest} can be used to
+  pass additional HTTP header commands to the underlying request.
+
 }
 
 \section{Extends}{
