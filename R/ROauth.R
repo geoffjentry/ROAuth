@@ -80,6 +80,17 @@ setRefClass("OAuth",
                 else
                   TRUE
               },
+
+              OAuthRequest2 = function(URL, method='GET', customHeader=NULL) {
+                ' If the OAuth handshake has been completed, will
+                submit a URL request with an OAuth signature, returning
+                any response from the server
+                '
+                if (! handshakeComplete)
+                  stop("This OAuth instance has not been verified")
+               
+              },
+                
               
               OAuthRequest = function(URL, method="GET", customHeader=NULL) {
                 ' If the OAuth handshake has been completed, will
