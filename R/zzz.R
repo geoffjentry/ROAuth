@@ -3,7 +3,7 @@
 }
 
 .onUnload <- function( libpath ) {
-  library.dynam.unload("ROAuth", libpath )
+  library.dynam.unload("OAuthInR", libpath )
 }
 
 OAuthFactory <- getRefClass("OAuth")
