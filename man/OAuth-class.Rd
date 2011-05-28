@@ -26,15 +26,16 @@
     \item{\code{oauthKey}:}{For internal use}
     \item{\code{oauthSecret}:}{For internal use}
     \item{\code{verifier}:}{For internal use}
+    \item{\code{signMethod}:}{For internal use}
   }
 }
 \section{Methods}{
   \describe{
-    \item{\code{handshake()}:}{Performs an OAuth handshake using the
+    \item{\code{handshake(signMethod='HMAC', curl=getCurlHandle(), ...)}:}{Performs an OAuth handshake using the
       information provided}
     \item{\code{isVerified()}:}{Returns the current verification status}
-    \item{\code{OAuthRequest(URL, method="GET",
-	customHeader=NULL)}:}{Will sign the URL provided and make an
+    \item{\code{OAuthRequest(URL, params=character(), method="GET",
+	customHeader=NULL, curl=getCurlHandle(), ...)}:}{Will sign the URL provided and make an
       HTTP request using either \code{POST} or \code{GET}, 
       determined by \code{method}, defaulting to \code{GET}.  NOTE:  The
       \code{URL} argument will be run through \code{\link{URLencode}}, so
@@ -63,9 +64,14 @@
   in a situation where this should be set to \code{FALSE}, it's best to double
   check this.
 
+  The \code{signMethod} to the \code{handshake} method tells the system which OAuth signature hash to
+  use, one of \code{HMAC} for \code{HMAC-SHA1} (default), \code{RSA} for \code{RSA-SHA1} (not implemented),
+  or \code{text} for \code{plaintext}.
+
   The \code{customHeader} argument to \code{OAuthRequest} can be used to
   pass additional HTTP header commands to the underlying request.
 
+  The \code{curl} arguments can be used to provide a custom curl header, defaulting to a generic \code{getCurlHandle} call.
 }
 
 \section{Extends}{
