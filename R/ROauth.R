@@ -129,9 +129,20 @@ oauthPOST <- function(url, consumerKey, consumerSecret,
                       oauthKey=oauthKey, oauthSecret=oauthSecret,
                       httpMethod="POST", signMethod=signMethod)
   opts <- list(...)
-
-  return(postForm(url, .params = c(params, lapply(auth, I)), curl = curl,
-                  .opts = opts, style = "POST"))
+  
+  ## post ,specify the method
+  ## We should be able to use postForm() but we have to work out the issues
+  ## with escaping, etc. to match the signature mechanism.
+  if (length(params) == 0) {
+    reader <- dynCurlReader(curl, baseURL = url, verbose = FALSE)
+    fields <- paste(names(auth), sapply(auth, curlPercentEncode),
+                    sep = "=", collapse = "&")
+    curlPerform(curl = curl, URL = url, postfields = fields,
+                writefunction = reader$update, ...)
+    reader$value()
+  } else
+  postForm(url, .params = c(params, lapply(auth, I)), curl = curl,
+           .opts = opts, style = "POST")
 }
 
 #XXX? use .opts for the curl options.
@@ -141,15 +152,13 @@ oauthGET <- function(url, consumerKey, consumerSecret,
                      oauthKey, oauthSecret, params=character(), customHeader = NULL,
                      curl = getCurlHandle(), signMethod='HMAC', ..., .opts = list(...)) {
   ##   opts = list(httpheader = c(Authentication = paste(names(auth),  auth, sep = "=", collapse = "\n   ")), ...)
-  if(is.null(curl)) {
+  if(is.null(curl))
     curl <- getCurlHandle()
-  }
-  
-  auth <- signRequest(url, params, consumerKey, consumerSecret,
-                      oauthKey=oauthKey, oauthSecret=oauthSecret,
-                      httpMethod="GET", signMethod=signMethod)
-  auth[["oauth_signature"]] <- encodeURI(auth[["oauth_signature"]])
-  
-  params <- c(params, as.list(auth))
-  return(getForm(url, .params = params, curl = curl, .opts = c(httpget = TRUE,  list(...))))
+   
+   auth <- signRequest(url, params, consumerKey, consumerSecret,
+                       oauthKey=oauthKey, oauthSecret=oauthSecret,
+                       httpMethod="GET", signMethod=signMethod)
+
+   params <- c(params, as.list(auth))
+   getForm(url, .params = params, curl = curl, .opts = c(httpget = TRUE,  list(...)))
 }

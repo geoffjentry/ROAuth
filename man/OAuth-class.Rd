@@ -93,7 +93,7 @@ Jeff Gentry
    ## This example uses a test case from liboauth and the
    ## keys are already pre-signed.  This is an example of
    ## one of the few times \code{needsVerifier} would be \code{FALSE}.
-    
+  \dontrun{
    reqURL <- "http://term.ie/oauth/example/request_token.php"
    accessURL <- "http://term.ie/oauth/example/access_token.php"
    authURL <- "NORMALLY YOU NEED THIS"
@@ -110,6 +110,7 @@ Jeff Gentry
    credentials$handshake()
    ## the GET isn't strictly necessary as that's the default
    credentials$OAuthRequest(testURL, "GET")
+  }
 }
 
 \keyword{classes}

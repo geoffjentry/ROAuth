@@ -2,13 +2,12 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
                          oauthKey = "", oauthSecret = "", httpMethod = "GET",
                          signMethod = "HMAC", nonce = genNonce(),
                          timestamp = Sys.time(),
-                         escapeFun = encodeURI) {
+                         escapeFun = curlPercentEncode) {
   ## Sign an request made up of the URL, the parameters as a named character
   ## vector the consumer key and secret and the token and token secret.
   httpMethod <- toupper(httpMethod)
   signMethod <- toupper(signMethod)
-
-  params <- sapply(params, escapeFun, simplify=FALSE)
+  
   params["oauth_nonce"] <- nonce
   params["oauth_timestamp"] <- as.integer(timestamp)
 
@@ -29,7 +28,7 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
   ## the resulting % prefix in the escaped characters, e.g. %20 becomes
   ## %2520 as %25 is the escape for %
   params <- params[order(names(params))]
-  args <- paste(names(params), sapply(params, escapeFun),
+  args <- paste(names(params), sapply(params, escapeFun, post.amp = TRUE),
                 sep = "%3D", collapse = "%26")  
 
   if(is.null(oauthSecret))
@@ -43,7 +42,10 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
 
   sig <- signString(odat, okey, signMethod)
 
-  params["oauth_signature"] <- sig  
+  if (httpMethod == "POST") {
+    sig <- curlPercentEncode(sig)
+  }
+  params["oauth_signature"] <- sig
   params[grepl("^oauth_", names(params))]
 }
 
@@ -98,21 +100,4 @@ signWithRSA <- function(key, data) {
 
 signWithPlaintext <- function(key, data) {
   key
-}
-
-encodeURI <- function(URI) {
-  if (!is.character(URI)) {
-    return(URI)
-  } else {
-    OK <- "[^-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.~]"
-    x <- strsplit(URI, "")[[1L]]
-    z <- grep(OK, x)
-    if (length(z)) {
-      y <- sapply(x[z], function(x) paste("%", toupper(as.character(charToRaw(x))), 
-                                          sep = "", collapse = ""))
-      x[z] <- y
-    }
-    
-    return(paste(x, collapse = ""))
-  }
 }
