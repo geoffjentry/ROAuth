@@ -29,12 +29,13 @@ setRefClass("OAuth",
                   with their web browser, entering a PIN into
                   this function.
                 '
-                handshakeComplete <<- FALSE
-                signMethod <<- signMethod
+                .self$handshakeComplete <- FALSE
+                .self$signMethod <- signMethod
                 resp <- oauthPOST(.self$requestURL, 
                                   .self$consumerKey,
                                   .self$consumerSecret,
-                                  NULL, NULL, signMethod=.self$signMethod, curl=curl, ...)
+                                  NULL, NULL, signMethod=.self$signMethod, curl=curl,
+                                  handshakeComplete=.self$handshakeComplete, ...)
                 vals <- parseResponse(resp)
                 if (!all(c('oauth_token', 'oauth_token_secret') %in%
                          names(vals))) {
@@ -42,8 +43,8 @@ setRefClass("OAuth",
                      "check your consumerKey and consumerSecret",
                      " and try again.")
                 }
-                oauthKey <<- vals['oauth_token']
-                oauthSecret <<- vals['oauth_token_secret']
+                .self$oauthKey <- vals["oauth_token"]
+                .self$oauthSecret <- vals["oauth_token_secret"]
                 if (.self$needsVerifier) {
                   verifyURL <- paste(.self$authURL, "?oauth_token=",
                                      oauthKey, sep='')
@@ -52,12 +53,13 @@ setRefClass("OAuth",
                                verifyURL,
                                "\nWhen complete, record the PIN given ",
                                "to you and provide it here: ", sep='')
-                  verifier <<- readline(prompt=msg)
+                  .self$verifier <- readline(prompt=msg)
                 }
                 params <- c(oauth_verifier=.self$verifier)
                 resp <- oauthPOST(.self$accessURL, .self$consumerKey, .self$consumerSecret,
                                   .self$oauthKey, .self$oauthSecret, signMethod=.self$signMethod,
-                                  curl=getCurlHandle(), params=params, ...)
+                                  curl=getCurlHandle(), params=params, handshakeComplete=.self$handshakeComplete,
+                                  ...)
                 vals <- parseResponse(resp)
                 if (!all(c('oauth_token', 'oauth_token_secret') %in%
                          names(vals))) {
@@ -66,9 +68,9 @@ setRefClass("OAuth",
                        " this handshake & browser authorization to get",
                        " a new PIN.")
                 }
-                oauthKey <<- vals['oauth_token']
-                oauthSecret <<- vals['oauth_token_secret']
-                handshakeComplete <<- TRUE
+                .self$oauthKey <- vals["oauth_token"]
+                .self$oauthSecret <- vals["oauth_token_secret"]
+                .self$handshakeComplete <- TRUE
               },
               
               isVerified = function() {
@@ -121,13 +123,14 @@ parseResponse <- function(response) {
 
 oauthPOST <- function(url, consumerKey, consumerSecret,
                       oauthKey, oauthSecret, params=character(), customHeader = NULL,
-                      curl = getCurlHandle(), signMethod='HMAC', ...) {
+                      curl = getCurlHandle(), signMethod='HMAC', handshakeComplete=TRUE, ...) {
   if(is.null(curl))
     curl <- getCurlHandle()
   
   auth <- signRequest(url, params, consumerKey, consumerSecret,
                       oauthKey=oauthKey, oauthSecret=oauthSecret,
-                      httpMethod="POST", signMethod=signMethod)
+                      httpMethod="POST", signMethod=signMethod,
+                      handshakeComplete=handshakeComplete)
   opts <- list(...)
   
   ## post ,specify the method

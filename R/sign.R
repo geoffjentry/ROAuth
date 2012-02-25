@@ -2,7 +2,8 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
                          oauthKey = "", oauthSecret = "", httpMethod = "GET",
                          signMethod = "HMAC", nonce = genNonce(),
                          timestamp = Sys.time(),
-                         escapeFun = curlPercentEncode) {
+                         escapeFun = curlPercentEncode,
+                         handshakeComplete=TRUE) {
   ## Sign an request made up of the URL, the parameters as a named character
   ## vector the consumer key and secret and the token and token secret.
   httpMethod <- toupper(httpMethod)
@@ -42,11 +43,13 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
 
   sig <- signString(odat, okey, signMethod)
 
-  if (httpMethod == "POST") {
+  ## Only perform the percent encode post-handshake when POSTing
+  if ((httpMethod == "POST") && (handshakeComplete)){
     sig <- curlPercentEncode(sig)
   }
   params["oauth_signature"] <- sig
-  params[grepl("^oauth_", names(params))]
+  ##
+  return(params[grepl("^oauth_", names(params))])
 }
 
 signString <- function(str, key, method) {
