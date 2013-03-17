@@ -2,13 +2,14 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
                          oauthKey = "", oauthSecret = "", httpMethod = "GET",
                          signMethod = "HMAC", nonce = genNonce(),
                          timestamp = Sys.time(),
-                         escapeFun = curlPercentEncode,
+                         escapeFun = encodeURI,
                          handshakeComplete=TRUE) {
   ## Sign an request made up of the URL, the parameters as a named character
   ## vector the consumer key and secret and the token and token secret.
   httpMethod <- toupper(httpMethod)
   signMethod <- toupper(signMethod)
-  
+
+  params <- sapply(params, escapeFun, simplify = FALSE)
   params["oauth_nonce"] <- nonce
   params["oauth_timestamp"] <- as.integer(timestamp)
 
@@ -45,7 +46,7 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
 
   ## Only perform the percent encode post-handshake when POSTing
   if ((httpMethod == "POST") && (handshakeComplete)){
-    sig <- curlPercentEncode(sig)
+    sig <- escapeFun(sig)
   }
   params["oauth_signature"] <- sig
   ##
@@ -103,4 +104,24 @@ signWithRSA <- function(key, data) {
 
 signWithPlaintext <- function(key, data) {
   key
+}
+
+## this function is derived from utils::URLencode
+## Characters not in the unreserved character set ([RFC3986] section 2.3) MUST be encoded
+##   unreserved = ALPHA, DIGIT, '-', '.', '_', '~'
+## cf. http://oauth.net/core/1.0/#encoding_parameters
+encodeURI <- function(URI, ...) {
+  if (!is.character(URI)) {
+    URI
+  } else {
+    OK <- "[^-A-Za-z0-9_.~]"
+    x <- strsplit(URI, "")[[1L]]
+    z <- grep(OK, x)
+    if (length(z)) {
+      y <- sapply(x[z], function(x) paste("%", toupper(as.character(charToRaw(x))),
+                                          sep = "", collapse = ""))
+      x[z] <- y
+    }
+      paste(x, collapse = "")
+  }
 }
