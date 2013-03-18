@@ -25,7 +25,7 @@ signRequest  <- function(url, params, consumerKey, consumerSecret,
                                              )
   params["oauth_version"] <- '1.0'
 
-  args <- normalizeParams(params, escapeFun)
+  args <- escapeFun(normalizeParams(params, escapeFun), post.amp = TRUE)
 
   if(is.null(oauthSecret))
      oauthSecret <- ""
@@ -125,5 +125,5 @@ normalizeParams <- function(params, escapeFun) {
   params <- sapply(params, escapeFun, post.amp = TRUE)
   ## If two or more parameters share the same name, they are sorted by their value.
   params <- params[order(names(params), params)]
-  return(escapeFun(paste(names(params), params, sep = "=", collapse = "&"), post.amp = TRUE))
+  return(paste(names(params), params, sep = "=", collapse = "&"))
 }
