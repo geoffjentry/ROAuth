@@ -140,14 +140,14 @@ oauthPOST <- function(url, consumerKey, consumerSecret,
   if(is.null(curl))
     curl <- getCurlHandle()
   
-  auth <- signRequest(url, params, consumerKey, consumerSecret,
+  params <- signRequest(url, params, consumerKey, consumerSecret,
                       oauthKey=oauthKey, oauthSecret=oauthSecret,
                       httpMethod="POST", signMethod=signMethod,
                       handshakeComplete=handshakeComplete)
   opts <- list(...)
   
   ## post ,specify the method
-  postForm(url, .params = c(params, lapply(auth, I)), curl = curl,
+  postForm(url, .params = params, curl = curl,
            .opts = opts, style = "POST")
 }
 
@@ -161,10 +161,9 @@ oauthGET <- function(url, consumerKey, consumerSecret,
   if(is.null(curl))
     curl <- getCurlHandle()
    
-   auth <- signRequest(url, params, consumerKey, consumerSecret,
+   params <- signRequest(url, params, consumerKey, consumerSecret,
                        oauthKey=oauthKey, oauthSecret=oauthSecret,
                        httpMethod="GET", signMethod=signMethod)
 
-   params <- c(params, as.list(auth))
    getForm(url, .params = params, curl = curl, .opts = c(httpget = TRUE,  list(...)))
 }
