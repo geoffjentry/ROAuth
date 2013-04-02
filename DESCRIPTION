@@ -3,7 +3,7 @@ Title: R interface for OAuth
 Description: This package provides an interface to the OAuth 1.0
         specification, allowing users to authenticate via OAuth to the
         server of their choice.
-Version: 0.9.2
+Version: 0.9.4
 Author: Jeff Gentry <geoffjentry@gmail.com>, Duncan Temple Lang
         <duncan@r-project.org>
 Maintainer: Jeff Gentry <geoffjentry@gmail.com>
