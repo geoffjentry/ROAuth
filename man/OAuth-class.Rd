@@ -55,7 +55,10 @@
   In almost all cases, saving an \code{OAuth} object after handshake
   and loading it into future sessions will allow it to remain authorized
   without needing any manual intervention that might have been performed
-  initially, such as the PIN step with Twitter authentication.
+  initially, such as the PIN step with Twitter authentication. Use the
+  function \code{save} to save the credential object to a file and then
+  \code{load} in another R session to bring it back in - there should be
+  no reason to undergo another handshake by doing this.
   
   The \code{needsVerifier} argument is optional and defaults to
   \code{TRUE}.  In almost all cases, the default should be used, the

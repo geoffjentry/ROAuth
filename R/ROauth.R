@@ -101,14 +101,14 @@ setRefClass("OAuth",
                 ## and for example, response JSON is broken as a result,
                 ## so change RCurl:::mapUnicodeEscapes temporarily to avoid it
                 ## cf. https://github.com/omegahat/RCurl/issues/1
-                rcurlEnv <- getNamespace("RCurl")
-                mapUnicodeEscapes <- get("mapUnicodeEscapes", rcurlEnv)
-                unlockBinding("mapUnicodeEscapes", rcurlEnv)
-                assign("mapUnicodeEscapes", function(str) str, rcurlEnv)
-                on.exit({
-                  assign("mapUnicodeEscapes", mapUnicodeEscapes, rcurlEnv)
-                  lockBinding("mapUnicodeEscapes", rcurlEnv)
-                }, add = TRUE)
+                ##rcurlEnv <- getNamespace("RCurl")
+                ##mapUnicodeEscapes <- get("mapUnicodeEscapes", rcurlEnv)
+                ##unlockBinding("mapUnicodeEscapes", rcurlEnv)
+                ##assign("mapUnicodeEscapes", function(str) str, rcurlEnv)
+                ##on.exit({
+                ##  assign("mapUnicodeEscapes", mapUnicodeEscapes, rcurlEnv)
+                ##  lockBinding("mapUnicodeEscapes", rcurlEnv)
+                ##}, add = TRUE)
 
                 httpFunc(URLencode(URL), params=params, consumerKey=.self$consumerKey,
                          consumerSecret=.self$consumerSecret,
