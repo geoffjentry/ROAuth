@@ -31,8 +31,9 @@
 }
 \section{Methods}{
   \describe{
-    \item{\code{handshake(signMethod='HMAC', curl=getCurlHandle(), ...)}:}{Performs an OAuth handshake using the
-      information provided}
+    \item{\code{handshake(signMethod='HMAC', curl=getCurlHandle(), browseUrl=TRUE, ...)}:}{Performs an OAuth handshake using the
+      information provided. If \code{browseUrl} is \code{TRUE}, the \code{\link{browseURL}} function will be called on 
+      the authentication URL}
     \item{\code{isVerified()}:}{Returns the current verification status}
     \item{\code{OAuthRequest(URL, params=character(), method="GET",
 	customHeader=NULL, curl=getCurlHandle(), ...)}:}{Will sign the URL provided and make an

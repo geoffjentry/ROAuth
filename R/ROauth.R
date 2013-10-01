@@ -23,7 +23,7 @@ setRefClass("OAuth",
                 .self
               },
               
-              handshake = function(signMethod='HMAC', curl=getCurlHandle(), ...) {
+              handshake = function(signMethod='HMAC', curl=getCurlHandle(), browseUrl=TRUE, ...) {
                 ' Performs the OAuth handshake.  In most cases
                   the user will need to complete a manual step
                   with their web browser, entering a PIN into
@@ -53,6 +53,9 @@ setRefClass("OAuth",
                                verifyURL,
                                "\nWhen complete, record the PIN given ",
                                "to you and provide it here: ", sep='')
+                  if (browseUrl) {
+                    browseURL(verifyURL)
+                  }
                   .self$verifier <- readline(prompt=msg)
                 }
                 params <- c(oauth_verifier=.self$verifier)
