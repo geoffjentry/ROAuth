@@ -1,5 +1,6 @@
 import("methods")
-
+import("RCurl")
+import("digest")
 exportClass("OAuth")
 export("OAuthFactory")
 
